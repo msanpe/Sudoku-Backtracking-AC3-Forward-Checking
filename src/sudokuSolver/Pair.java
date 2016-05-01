@@ -5,7 +5,7 @@ package sudokuSolver;
  *
  * @author Miguel Sancho Peña
  * 
- * Class representing a pair of variable(cell) with its Domain
+ * Class representing a pair of cells
  */
 public class Pair {
 

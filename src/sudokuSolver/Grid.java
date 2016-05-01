@@ -117,7 +117,7 @@ public class Grid {
      * Sets all the cells to 0
      */
     public void cleanBoard() {
-        //Recorre el tablero
+        //Iterate through the board
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 m_board[i][j] = 0;

@@ -1,8 +1,3 @@
-/*
- * Interface.java
- *
- * 
- */
 package sudokuSolver;
 
 import java.awt.Color;
@@ -12,7 +7,7 @@ import javax.swing.JFileChooser;
 
 /**
  *
- * @author mireia
+ * @author Miguel Sancho Peña
  */
 public class Interface extends javax.swing.JFrame {
 
@@ -59,7 +54,7 @@ public class Interface extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Práctica SISTEMAS INTELIGENTES. SUDOKU");
+        setTitle("Sudoku Solver");
         setResizable(false);
 
         jPanelTab.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
@@ -102,7 +97,7 @@ public class Interface extends javax.swing.JFrame {
             .add(0, 101, Short.MAX_VALUE)
         );
 
-        jButBack.setText("Comprobar");
+        jButBack.setText("Check Solution");
         jButBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButBackActionPerformed(evt);
@@ -149,9 +144,9 @@ public class Interface extends javax.swing.JFrame {
             }
         });
 
-        jMenu1.setText("Archivo");
+        jMenu1.setText("File");
 
-        jMenuItem1.setText("Cargar Sudoku");
+        jMenuItem1.setText("Load Sudoku");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem1ActionPerformed(evt);
@@ -159,7 +154,7 @@ public class Interface extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem1);
 
-        jMenuItem2.setText("Borrar Sudoku");
+        jMenuItem2.setText("Delete Sudoku");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem2ActionPerformed(evt);
@@ -183,20 +178,19 @@ public class Interface extends javax.swing.JFrame {
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                             .add(layout.createSequentialGroup()
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                                    .add(org.jdesktop.layout.GroupLayout.LEADING, jButFC, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
-                                    .add(org.jdesktop.layout.GroupLayout.LEADING, jButton1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .add(0, 0, Short.MAX_VALUE))
-                            .add(layout.createSequentialGroup()
-                                .add(jButBack, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 200, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .add(0, 0, Short.MAX_VALUE))
-                            .add(layout.createSequentialGroup()
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                                     .add(layout.createSequentialGroup()
                                         .add(jButton2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 199, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                         .add(0, 20, Short.MAX_VALUE))
                                     .add(jLabel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addContainerGap())))
+                                .addContainerGap())
+                            .add(layout.createSequentialGroup()
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                    .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                                        .add(org.jdesktop.layout.GroupLayout.LEADING, jButFC, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
+                                        .add(org.jdesktop.layout.GroupLayout.LEADING, jButton1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .add(jButBack, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 200, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .add(0, 0, Short.MAX_VALUE))))
                     .add(layout.createSequentialGroup()
                         .add(38, 38, 38)
                         .add(jPanelNum, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -238,7 +232,7 @@ public class Interface extends javax.swing.JFrame {
     private void jButFCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButFCActionPerformed
 
         // calls backtracking
-        player.ejecutarBC(gameGrid);
+        player.runBC(gameGrid);
         repaint();
 
         //Checks for correct solution
@@ -364,8 +358,8 @@ public class Interface extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
 
-        //Calls AC3 algorithm 
-        boolean availSol = player.ejecutarAC(gameGrid);
+        //Calls AC3 algorithm
+        boolean availSol = player.runAC(gameGrid);
         repaint();
         if (!availSol) {
             jLabel1.setText("There is no solution");
@@ -373,8 +367,8 @@ public class Interface extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        player.ejecutarFC(gameGrid);
         repaint();
-
         //Check if the solution is correct
         if (gameGrid.checkBoard()) {
             jLabel1.setText("¡CORRECT!");
@@ -461,9 +455,9 @@ public class Interface extends javax.swing.JFrame {
         }
 
         //Define font
-        Font fuente = new Font("SansSerif", Font.BOLD, 30);
+        Font font = new Font("SansSerif", Font.BOLD, 30);
         g.setColor(Color.DARK_GRAY);
-        g.setFont(fuente);
+        g.setFont(font);
 
         //Draw numbers
         for (int i = 0; i < 9; i++) {
@@ -493,7 +487,7 @@ public class Interface extends javax.swing.JFrame {
 
         num = 1;
         g.setColor(Color.DARK_GRAY);
-        g.setFont(fuente);
+        g.setFont(font);
         //Draws numbers
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
