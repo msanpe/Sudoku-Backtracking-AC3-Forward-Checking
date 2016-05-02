@@ -7,12 +7,16 @@ import java.util.concurrent.TimeUnit;
 /**
  *
  * @author Miguel Sancho Peña
- * 
- * The idea behind this class is to represent a virtual player which plays the game by applying the 
- * three different algorithms. In order to apply AC3 or forward checking algorithms we must first represent
- * a map which contains all the different variables(cells) of the problem each one having its domain (values 1-9).
- * In order to do this, i will use a hashmap to link cells to domains.
- * 
+ *
+ * The idea behind this class is to represent a virtual player which plays the
+ * game by applying the three different algorithms. In order to apply AC3 or
+ * forward checking algorithms we must first represent a map which contains all
+ * the different variables(cells) of the problem each one having its domain
+ * (values 1-9). In order to do this, i will use a hashmap to link cells to
+ * domains.
+ * In addition to that, in order to apply the AC3 algorithm, i will need an array
+ * that contains a set of arcs
+ *
  */
 public class Player {
 
@@ -31,7 +35,7 @@ public class Player {
                     Cell c = new Cell(i, j);
                     ArrayList<Integer> elements = fillDomain();
                     map.put(c, elements);
-                } else { 
+                } else {
                     Cell c = new Cell(i, j);
                     ArrayList<Integer> elements = new ArrayList<>();
                     elements.add(tablero.getCell(i, j));
@@ -68,7 +72,6 @@ public class Player {
 //////////////////////////////////////////////////////////////////////////////////
     // AC3 methods
 ////////////////////////////////////////////////////////////////////////////////// 
-    
     private void fillQ() { // fills Q in the first iteration of the algorithm
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
@@ -89,9 +92,11 @@ public class Player {
 
     private void addToQ(Cell c, boolean fill) { // adds arcs to Q, boolean fill controls if the fillup is in the first execution
         addRow(c, fill);                        // in that case, it will add all the possible arcs
+        addColumn(c, fill);                     // columna
+        addMatrix(c, fill);
     }
 
-    private void addRow(Cell c, boolean fill) { 
+    private void addRow(Cell c, boolean fill) {
         for (int i = 0; i < 9; i++) {
             if (i != c.col) {
                 Pair pair = null;
@@ -156,7 +161,7 @@ public class Player {
         boolean changed;
         boolean solutionExists = true;
         fillMap(board); // genereate auxiliary map
-        fillQ(); 
+        fillQ();
         while (qArray.size() > 0 && solutionExists) { // while Q != empty and solution exists
             Pair pair = qArray.get(0); // read from Q
             qArray.remove(pair); // delete the pair from Q
@@ -190,9 +195,11 @@ public class Player {
 
         return true;
     }
+
     // searches for the number given as a parameter(number from first cell)
     // in the domain of the second cell, if it finds a different number
     // returns false (no deletion)
+
     private boolean deleteValue(ArrayList<Integer> values, int number) {
         for (int value : values) {
             if (value != number) {
@@ -211,7 +218,7 @@ public class Player {
         if (endOfGrid(board)) {
             return true;
         }
-        
+
         ArrayList<Integer> valuesCell = map.get(cell); // get the domain of the cell on which im operating 
         int value = 0;
 
@@ -225,7 +232,7 @@ public class Player {
             }
         }
         board.setCell(0, cell.row, cell.col);  // restores the cell value
-        
+
         return false;
     }
 
@@ -287,9 +294,37 @@ public class Player {
 //////////////////////////////////////////////////////////////////////////////////
     // Forward Checking
 ////////////////////////////////////////////////////////////////////////////////// 
-    
-    public boolean forwardChecking(Grid tablero, Cell cell) { // TODO
-        
+    public boolean forwardChecking(Grid board, Cell cell) { 
+        recursiveCalls++;
+        if (endOfGrid(board)) { // if all the numbers of the board != 0
+            return true;
+        }
+
+        DeleteQueue delQueue = new DeleteQueue();   // create delete queue
+        delQueue.fcAddToDelete(cell);   // fill the queue with posible variables (row, col & matrix) that must update their domain
+        ArrayList<Integer> valuesCell = map.get(cell); // save the domain of the variable on which im operating
+        int value = 0;
+
+        for (int i = 0; i < valuesCell.size(); i++) {  // for each value of the domain, I will delete the corresponding value from the domain of the variables with restrictions towards V
+            value = valuesCell.get(i);
+            delQueue.executeDeletion(value, map); // delete from the domains
+            if (delQueue.checkForEmptyDomains(map)) { // check for empty domains
+                delQueue.restoreDomains(value, map); // If any domain is empty, restore all domains
+            } else {
+                ArrayList<Integer> newDomain = new ArrayList<>();
+                newDomain.add(value);
+                map.put(cell, newDomain);                           // update the domain of the varible on which im operating
+                board.setCell(value, cell.row, cell.col);             // set the new value on the board
+                if (forwardChecking(board, cell.nextCell(board))) { // recursive call
+                    return true;
+                } else {
+                    delQueue.restoreDomains(value, map);          // restore all domains
+                    map.put(cell, valuesCell);              // restore the domain of the cell on which I operated
+                }
+            }
+        }
+        board.setCell(0, cell.row, cell.col);   // restore original value on the board
+
         return false;
     }
 
@@ -298,42 +333,45 @@ public class Player {
 //////////////////////////////////////////////////////////////////////////////////    
     public boolean runBC(Grid board) {
         if (!ac3) // if AC3 did not run, I load the map
+        {
             fillMap(board);
+        }
         Cell cell = new Cell();
-        
-        long time1= System.nanoTime();
+
+        long time1 = System.nanoTime();
         backtrack(board, cell.nextCell(board)); // call it with the first empty cell
         long time2 = System.nanoTime();
         long timeSpent = time2 - time1;
         System.out.println("Time elapsed(Backtracking): " + TimeUnit.NANOSECONDS.toMillis(timeSpent) + "ms");
         System.out.println("Recursive calls: " + recursiveCalls);
-        
+
         return true;
     }
 
-
     public boolean runAC(Grid board) {
-        long time1= System.nanoTime();
+        long time1 = System.nanoTime();
         boolean solutionExists = AC3(board);
         long time2 = System.nanoTime();
         long timeSpent = time2 - time1;
         System.out.println("Time elapsed(AC3): " + TimeUnit.NANOSECONDS.toMillis(timeSpent) + "ms");
-        
+
         return solutionExists;
     }
 
     public boolean ejecutarFC(Grid tablero) {
         if (!ac3) // if AC3 did not run, I load the map
+        {
             fillMap(tablero);
+        }
         Cell cell = new Cell();
-        
-        long time1= System.nanoTime();
+
+        long time1 = System.nanoTime();
         forwardChecking(tablero, cell.nextCell(tablero)); // call it with the first empty cell
         long time2 = System.nanoTime();
         long timeSpent = time2 - time1;
         System.out.println("Time elapsed(Forward Checking): " + TimeUnit.NANOSECONDS.toMillis(timeSpent) + "ms");
         System.out.println("Recursive calls: " + recursiveCalls);
-        
+
         return true;
     }
 }
