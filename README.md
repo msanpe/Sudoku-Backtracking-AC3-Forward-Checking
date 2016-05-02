@@ -8,6 +8,6 @@ This project consists of an interface representing the sudoku board where the us
 -Forward checking
 
 The recursive calls and the elapsed time for each of the algorithms is also measured and will be shown through the console.
-Try and call backtracking and forward checking algorithms before and after calling AC3 to see how the recursive calls and time taken change with the reduction of the domains.
+Try calling backtracking and forward checking algorithms before and after calling AC3 to see how the recursive calls and time taken change with the reduction of the domains.
 
 For any question, feel free to contact me.
