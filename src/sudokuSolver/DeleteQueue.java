@@ -97,7 +97,7 @@ public class DeleteQueue {
             return false;
         }
 
-        public void restoreDomains(int value, HashMap<Cell, ArrayList<Integer>> map) { // restaura los dominios de los vertices que han sido borrados
+        public void restoreDomains(int value, HashMap<Cell, ArrayList<Integer>> map) { // restore domains of the deleted variables
             for (Cell c : deletedList) {
                 ArrayList<Integer> dominio = map.get(c);
                 dominio.add(value);
